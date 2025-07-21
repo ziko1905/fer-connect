@@ -23,12 +23,12 @@ class UserControllerTest {
           "firstName": "Karlo",
           "lastName": "Čehulić",
           "email": "randomemail@gmail.com",
-          "password": "Strong1",
+          "password": "Strong1"
         }
         """;
 
     mockMvc
         .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(validUserJson))
-        .andExpect(MockMvcResultMatchers.status().isOk());
+        .andExpect(MockMvcResultMatchers.status().isCreated());
   }
 }
