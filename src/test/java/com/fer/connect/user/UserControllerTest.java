@@ -17,8 +17,8 @@ class UserControllerTest {
   private MockMvc mockMvc;
 
   @Test
-  void itRespondesWithOkOnRightRequest() throws Exception {
-    String validUserJson = """
+  void respondesWithOkOnRightRequest() throws Exception {
+    String validUserJSON = """
         {
           "firstName": "Karlo",
           "lastName": "Čehulić",
@@ -28,7 +28,22 @@ class UserControllerTest {
         """;
 
     mockMvc
-        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(validUserJson))
+        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(validUserJSON))
         .andExpect(MockMvcResultMatchers.status().isCreated());
+  }
+
+  @Test
+  void respondesWithBadRequestIfNecessaryFieldsAreMissing() throws Exception {
+    String invalidUserJSON = """
+        {
+          "lastName": "Čehulić",
+          "email": "randomemail@gmail.com",
+          "password": "Strong1"
+        }
+        """;
+
+    mockMvc
+        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(invalidUserJSON))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest());
   }
 }

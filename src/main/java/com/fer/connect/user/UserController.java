@@ -17,6 +17,10 @@ public class UserController {
 
   @PostMapping("/users")
   public ResponseEntity<Object> postUser(@RequestBody User newUser) {
+    if (newUser.getFirstName() == null) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
     userService.save(newUser);
 
     return new ResponseEntity<>(HttpStatus.CREATED);
