@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "app_user")
@@ -17,16 +18,20 @@ public class User {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @Column
+  @Column(nullable = false)
+  @NotNull
   private String firstName;
 
-  @Column
+  @Column(nullable = false)
+  @NotNull
   private String lastName;
 
-  @Column
+  @Column(nullable = false)
+  @NotNull
   private String email;
 
-  @Column
+  @Column(nullable = false)
+  @NotNull
   private String password;
 
   public UUID getId() {

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class UserController {
   private final UserService userService;
@@ -16,11 +18,7 @@ public class UserController {
   }
 
   @PostMapping("/users")
-  public ResponseEntity<Object> postUser(@RequestBody User newUser) {
-    if (newUser.getFirstName() == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
+  public ResponseEntity<Object> postUser(@RequestBody @Valid User newUser) {
     userService.save(newUser);
 
     return new ResponseEntity<>(HttpStatus.CREATED);

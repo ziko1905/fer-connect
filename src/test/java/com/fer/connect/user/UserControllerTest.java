@@ -17,7 +17,7 @@ class UserControllerTest {
   private MockMvc mockMvc;
 
   @Test
-  void respondesWithOkOnRightRequest() throws Exception {
+  void returnsCreatedStatus_whenUserDataIsValid() throws Exception {
     String validUserJSON = """
         {
           "firstName": "Karlo",
@@ -33,7 +33,7 @@ class UserControllerTest {
   }
 
   @Test
-  void respondesWithBadRequestIfNecessaryFieldsAreMissing() throws Exception {
+  void returnsBadRequestStatus_whenNeccessaryFieldsAreMissing() throws Exception {
     String invalidUserJSON = """
         {
           "lastName": "Čehulić",
