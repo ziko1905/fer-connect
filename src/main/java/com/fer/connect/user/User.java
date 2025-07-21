@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
@@ -20,18 +21,22 @@ public class User {
 
   @Column(nullable = false)
   @NotNull
+  @NotEmpty
   private String firstName;
 
   @Column(nullable = false)
   @NotNull
+  @NotEmpty
   private String lastName;
 
   @Column(nullable = false)
   @NotNull
+  @NotEmpty
   private String email;
 
   @Column(nullable = false)
   @NotNull
+  @NotEmpty
   private String password;
 
   public UUID getId() {

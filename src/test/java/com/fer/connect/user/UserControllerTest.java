@@ -46,4 +46,20 @@ class UserControllerTest {
         .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(invalidUserJSON))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
   }
+
+  @Test
+  void returnsBadRequestStatus_whenNeccessaryFieldsAreEmpty() throws Exception {
+    String invalidUserJSON = """
+        {
+          "firstName": "Karlo",
+          "lastName": "",
+          "email": "randomemail@gmail.com",
+          "password": "Strong1"
+        }
+        """;
+
+    mockMvc
+        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(invalidUserJSON))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest());
+  }
 }
