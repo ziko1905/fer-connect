@@ -9,10 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "app_user")
 public class User {
+  private static final int MIN_PASSWORD_LENGTH = 8;
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,7 +34,18 @@ public class User {
 
   @Column(nullable = false)
   @NotBlank
+  @Size(min = MIN_PASSWORD_LENGTH)
   private String password;
+
+  public User() {
+  }
+
+  public User(String firstName, String lastName, String email, String password) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.password = password;
+  }
 
   public UUID getId() {
     return id;

@@ -9,6 +9,40 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+class UserBuilder {
+  private String firstName = "Default";
+  private String lastName = "User";
+  private String email = "default@email.com";
+  private String password = "LongPassword1";
+
+  public UserBuilder withPassword(String password) {
+    this.password = password;
+
+    return this;
+  }
+
+  public User build() {
+    return new User(firstName, lastName, email, password);
+  }
+}
+
+class UserJSONCreator {
+  static String createUserJSON(String firstName, String lastName, String email, String password) {
+    return String.format("""
+        {
+            "firstName": "%s",
+            "lastName": "%s",
+            "email": "%s",
+            "password": "%s"
+        }
+        """, firstName, lastName, email, password);
+  }
+
+  static String createUserJSON(User user) {
+    return createUserJSON(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword());
+  }
+}
+
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserControllerTest {
@@ -18,14 +52,7 @@ class UserControllerTest {
 
   @Test
   void returnsCreatedStatus_whenUserDataIsValid() throws Exception {
-    String validUserJSON = """
-        {
-          "firstName": "Karlo",
-          "lastName": "Čehulić",
-          "email": "randomemail@gmail.com",
-          "password": "Strong1"
-        }
-        """;
+    String validUserJSON = UserJSONCreator.createUserJSON(new UserBuilder().build());
 
     mockMvc
         .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(validUserJSON))
@@ -38,7 +65,7 @@ class UserControllerTest {
         {
           "lastName": "Čehulić",
           "email": "randomemail@gmail.com",
-          "password": "Strong1"
+          "password": "Password1"
         }
         """;
 
@@ -49,17 +76,20 @@ class UserControllerTest {
 
   @Test
   void returnsBadRequestStatus_whenNeccessaryFieldsAreEmpty() throws Exception {
-    String invalidUserJSON = """
-        {
-          "firstName": "Karlo",
-          "lastName": "",
-          "email": "randomemail@gmail.com",
-          "password": "Strong1"
-        }
-        """;
-
+    String invalidUserJSON = UserJSONCreator.createUserJSON(new UserBuilder().withPassword("").build());
     mockMvc
         .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(invalidUserJSON))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
+  }
+
+  @Test
+  void returnBadRequest_whenPasswordIsTooShort() throws Exception {
+    String shortPassUserJSON = UserJSONCreator.createUserJSON(new UserBuilder().withPassword("Short").build());
+
+    mockMvc
+        .perform(
+            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(shortPassUserJSON))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
   }
 }
