@@ -8,8 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "app_user")
@@ -20,23 +19,19 @@ public class User {
   private UUID id;
 
   @Column(nullable = false)
-  @NotNull
-  @NotEmpty
+  @NotBlank
   private String firstName;
 
   @Column(nullable = false)
-  @NotNull
-  @NotEmpty
+  @NotBlank
   private String lastName;
 
   @Column(nullable = false)
-  @NotNull
-  @NotEmpty
+  @NotBlank
   private String email;
 
   @Column(nullable = false)
-  @NotNull
-  @NotEmpty
+  @NotBlank
   private String password;
 
   public UUID getId() {
