@@ -83,7 +83,7 @@ class UserControllerTest {
   }
 
   @Test
-  void returnBadRequest_whenPasswordIsTooShort() throws Exception {
+  void returnsBadRequest_whenPasswordIsTooShort() throws Exception {
     String shortPassUserJSON = UserJSONCreator.createUserJSON(new UserBuilder().withPassword("Short").build());
 
     mockMvc
