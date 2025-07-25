@@ -1,5 +1,7 @@
 package com.fer.connect.user;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -8,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,5 +112,24 @@ class UserControllerTest {
             MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(shortPassUserJSON))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
+  }
+
+  @Test
+  void reurnsBadRequestWithMessage_whenEmailAlreadyInDB() throws Exception {
+    String defaultUserJSON = UserJSONCreator.createUserJSON(new UserBuilder().build());
+
+    mockMvc
+        .perform(
+            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(defaultUserJSON));
+
+    MvcResult result = mockMvc
+        .perform(
+            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(defaultUserJSON))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andReturn();
+
+    String json = result.getResponse().getContentAsString();
+
+    assertTrue(json.contains("An user with that email already exists"));
   }
 }
