@@ -18,39 +18,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-class UserBuilder {
-  private String firstName = "Default";
-  private String lastName = "User";
-  private String email = "default@email.com";
-  private String password = "LongPassword1";
-
-  public UserBuilder withPassword(String password) {
-    this.password = password;
-
-    return this;
-  }
-
-  public User build() {
-    return new User(firstName, lastName, email, password);
-  }
-}
-
-class UserJSONCreator {
-  static String createUserJSON(String firstName, String lastName, String email, String password) {
-    return String.format("""
-        {
-            "firstName": "%s",
-            "lastName": "%s",
-            "email": "%s",
-            "password": "%s"
-        }
-        """, firstName, lastName, email, password);
-  }
-
-  static String createUserJSON(User user) {
-    return createUserJSON(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword());
-  }
-}
+import com.fer.connect.user.util.UserBuilder;
+import com.fer.connect.user.util.UserJsonWriter;
 
 @Testcontainers
 @AutoConfigureMockMvc
@@ -73,16 +42,16 @@ class UserControllerTest {
 
   @Test
   void returnsCreatedStatus_whenUserDataIsValid() throws Exception {
-    String validUserJSON = UserJSONCreator.createUserJSON(new UserBuilder().build());
+    String validUserJson = UserJsonWriter.writeString(new UserBuilder().build());
 
     mockMvc
-        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(validUserJSON))
+        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(validUserJson))
         .andExpect(MockMvcResultMatchers.status().isCreated());
   }
 
   @Test
   void returnsBadRequestStatus_whenNeccessaryFieldsAreMissing() throws Exception {
-    String invalidUserJSON = """
+    String invalidUserJson = """
         {
           "lastName": "Čehulić",
           "email": "randomemail@gmail.com",
@@ -91,45 +60,46 @@ class UserControllerTest {
         """;
 
     mockMvc
-        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(invalidUserJSON))
+        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(invalidUserJson))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
   }
 
   @Test
   void returnsBadRequestStatus_whenNeccessaryFieldsAreEmpty() throws Exception {
-    String invalidUserJSON = UserJSONCreator.createUserJSON(new UserBuilder().withPassword("").build());
+    String invalidUserJson = UserJsonWriter.writeString(new UserBuilder().withPassword("").build());
     mockMvc
-        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(invalidUserJSON))
+        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(invalidUserJson))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
   }
 
   @Test
   void returnsBadRequest_whenPasswordIsTooShort() throws Exception {
-    String shortPassUserJSON = UserJSONCreator.createUserJSON(new UserBuilder().withPassword("Short").build());
+    String shortPassUserJson = UserJsonWriter.writeString(new UserBuilder().withPassword("Short").build());
 
     mockMvc
         .perform(
-            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(shortPassUserJSON))
+            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(shortPassUserJson))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
   }
 
   @Test
   void reurnsBadRequestWithMessage_whenEmailAlreadyInDB() throws Exception {
-    String defaultUserJSON = UserJSONCreator.createUserJSON(new UserBuilder().build());
+    String defaultUserJson = UserJsonWriter.writeString(new UserBuilder().build());
 
     mockMvc
         .perform(
-            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(defaultUserJSON));
+            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(defaultUserJson));
 
     MvcResult result = mockMvc
         .perform(
-            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(defaultUserJSON))
+            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(defaultUserJson))
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andReturn();
 
-    String json = result.getResponse().getContentAsString();
+    String responseContent = result.getResolvedException().getMessage();
 
-    assertTrue(json.contains("An user with that email already exists"));
+    System.out.println("HERE IS THE Json: " + responseContent + " AH");
+    assertTrue(responseContent.contains("An user with that email already exists"));
   }
 }
