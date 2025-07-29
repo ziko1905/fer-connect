@@ -11,7 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,11 +26,11 @@ import com.fer.connect.exception.RestErrorType;
 import com.fer.connect.user.util.UserBuilder;
 import com.fer.connect.user.util.UserJsonWriter;
 
+@ActiveProfiles("integration")
 @Testcontainers
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(TestContainerConfig.class)
-
 @Transactional
 class FerConnectApplicationTests {
 
@@ -39,12 +39,6 @@ class FerConnectApplicationTests {
 
   @Autowired
   private ObjectMapper objectMapper;
-
-  static void configureProperties(DynamicPropertyRegistry registry) {
-    registry.add("spring.datasource.url", TestContainerConfig.postgres::getJdbcUrl);
-    registry.add("spring.datasource.username", TestContainerConfig.postgres::getUsername);
-    registry.add("spring.datasource.password", TestContainerConfig.postgres::getPassword);
-  }
 
   @Test
   void haveRightJsonErrorFormat_whenIntendedAPIErrorOccurs() throws Exception {

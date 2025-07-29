@@ -6,7 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -19,6 +19,7 @@ import com.fer.connect.exception.RestErrorType;
 import com.fer.connect.user.util.UserBuilder;
 import com.fer.connect.user.util.UserJsonWriter;
 
+@ActiveProfiles("integration")
 @Testcontainers
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -28,12 +29,6 @@ class UserControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
-
-  static void configureProperties(DynamicPropertyRegistry registry) {
-    registry.add("spring.datasource.url", TestContainerConfig.postgres::getJdbcUrl);
-    registry.add("spring.datasource.username", TestContainerConfig.postgres::getUsername);
-    registry.add("spring.datasource.password", TestContainerConfig.postgres::getPassword);
-  }
 
   @Test
   void returnsCreatedStatus_whenUserDataIsValid() throws Exception {
