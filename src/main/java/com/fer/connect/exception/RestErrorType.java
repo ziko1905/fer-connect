@@ -29,4 +29,8 @@ public enum RestErrorType {
   public HttpStatus getHttpStatus() {
     return httpStatus;
   }
+
+  public int getHttpStatusCode() {
+    return httpStatus.value();
+  }
 }

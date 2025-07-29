@@ -19,11 +19,8 @@ public class UserController {
 
   @PostMapping("/users")
   public ResponseEntity<Object> postUser(@RequestBody @Valid User newUser) {
-    try {
-      userService.save(newUser);
-    } catch (Exception e) {
-      return new ResponseEntity<>("An user with that email already exists", HttpStatus.BAD_REQUEST);
-    }
+    userService.save(newUser);
+
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 }
