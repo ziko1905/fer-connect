@@ -1,7 +1,5 @@
 package com.fer.connect.user;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,13 +8,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.hamcrest.Matchers;
 
 import com.fer.connect.config.TestContainerConfig;
+import com.fer.connect.exception.RestErrorType;
 import com.fer.connect.user.util.UserBuilder;
 import com.fer.connect.user.util.UserJsonWriter;
 
@@ -87,15 +86,11 @@ class UserControllerTest {
         .perform(
             MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(defaultUserJson));
 
-    MvcResult result = mockMvc
+    mockMvc
         .perform(
             MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(defaultUserJson))
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
-        .andReturn();
-
-    String responseContent = result.getResolvedException().getMessage();
-
-    System.out.println("HERE IS THE Json: " + responseContent + " AH");
-    assertTrue(responseContent.contains("An user with that email already exists"));
+        .andExpect(MockMvcResultMatchers.content()
+            .string(Matchers.containsString(RestErrorType.USER_EMAIL_EXISTS.getMessage())));
   }
 }
