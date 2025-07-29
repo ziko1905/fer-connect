@@ -3,6 +3,8 @@ package com.fer.connect.user;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.fer.connect.user.exception.UserWithSameEmailException;
+
 @Service
 public class UserService {
 
@@ -14,11 +16,11 @@ public class UserService {
     this.passwordEncoder = passwordEncoder;
   }
 
-  public void save(User newUser) throws Exception {
-    User oldU = userRepository.findByEmail(newUser.getEmail());
+  public void save(User newUser) {
+    User existingUser = userRepository.findByEmail(newUser.getEmail());
 
-    if (oldU != null) {
-      throw new Exception();
+    if (existingUser != null) {
+      throw new UserWithSameEmailException();
     }
 
     newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
