@@ -46,13 +46,14 @@ class FerConnectApplicationTests {
 
     // Makes sure email is in the db so that exception api will respond with error
     mockMvc.perform(
-        MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(sameEmailUserJson));
+        MockMvcRequestBuilders.post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
+            .content(sameEmailUserJson));
 
     MvcResult result = mockMvc.perform(
-        MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(sameEmailUserJson))
+        MockMvcRequestBuilders.post("/api/v1/users").contentType(MediaType.APPLICATION_JSON).content(sameEmailUserJson))
         .andExpect(MockMvcResultMatchers.status().is(RestErrorType.USER_EMAIL_EXISTS.getHttpStatusCode()))
         .andExpect(jsonPath("$.status").value(RestErrorType.USER_EMAIL_EXISTS.getHttpStatusCode()))
-        .andExpect(jsonPath("$.path").value("/users"))
+        .andExpect(jsonPath("$.path").value("/api/v1/users"))
         .andExpect(jsonPath("$.error.code").value(RestErrorType.USER_EMAIL_EXISTS.getErrorCode()))
         .andExpect(jsonPath("$.error.message").value(RestErrorType.USER_EMAIL_EXISTS.getMessage())).andReturn();
 

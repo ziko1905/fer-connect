@@ -35,7 +35,8 @@ class UserControllerTest {
     String validUserJson = UserJsonWriter.writeString(new UserBuilder().build());
 
     mockMvc
-        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(validUserJson))
+        .perform(
+            MockMvcRequestBuilders.post("/api/v1/users").contentType(MediaType.APPLICATION_JSON).content(validUserJson))
         .andExpect(MockMvcResultMatchers.status().isCreated());
   }
 
@@ -50,7 +51,8 @@ class UserControllerTest {
         """;
 
     mockMvc
-        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(invalidUserJson))
+        .perform(MockMvcRequestBuilders.post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
+            .content(invalidUserJson))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
   }
 
@@ -58,7 +60,8 @@ class UserControllerTest {
   void returnsBadRequestStatus_whenNeccessaryFieldsAreEmpty() throws Exception {
     String invalidUserJson = UserJsonWriter.writeString(new UserBuilder().withPassword("").build());
     mockMvc
-        .perform(MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(invalidUserJson))
+        .perform(MockMvcRequestBuilders.post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
+            .content(invalidUserJson))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
   }
 
@@ -68,7 +71,8 @@ class UserControllerTest {
 
     mockMvc
         .perform(
-            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(shortPassUserJson))
+            MockMvcRequestBuilders.post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
+                .content(shortPassUserJson))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
   }
@@ -79,11 +83,13 @@ class UserControllerTest {
 
     mockMvc
         .perform(
-            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(defaultUserJson));
+            MockMvcRequestBuilders.post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
+                .content(defaultUserJson));
 
     mockMvc
         .perform(
-            MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).content(defaultUserJson))
+            MockMvcRequestBuilders.post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
+                .content(defaultUserJson))
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers.content()
             .string(Matchers.containsString(RestErrorType.USER_EMAIL_EXISTS.getMessage())));
