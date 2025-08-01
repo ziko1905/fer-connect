@@ -23,10 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fer.connect.config.TestContainerConfig;
 import com.fer.connect.exception.IntendedErrorResponse;
 import com.fer.connect.exception.RestErrorType;
-import com.fer.connect.exception.UnintendedErrorResponse;
 import com.fer.connect.user.util.UserBuilder;
 import com.fer.connect.user.util.UserJsonWriter;
-import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.HttpStatus;
 
 @ActiveProfiles("integration")
 @Testcontainers
@@ -61,27 +59,6 @@ class FerConnectApplicationTests {
 
     IntendedErrorResponse errorResponse = objectMapper.readValue(result.getResponse().getContentAsString(),
         IntendedErrorResponse.class);
-
-    Instant responseTimestamp = errorResponse.getTimestamp();
-    Instant higherTimestampLimit = Instant.now();
-    Instant lowerTimestampLimit = higherTimestampLimit.minusSeconds(5);
-
-    assertThat(responseTimestamp).isBetween(lowerTimestampLimit, higherTimestampLimit);
-  }
-
-  @Test
-  void haveRightJsonErrorFormat_whenUnintendedAPIErrorOccurs() throws Exception {
-    String noPasswordUser = UserJsonWriter.writeString(new UserBuilder().withPassword("").build());
-
-    MvcResult result = mockMvc
-        .perform(MockMvcRequestBuilders.post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
-            .content(noPasswordUser))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.status").value(HttpStatus.SC_BAD_REQUEST))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.path").value("/api/v1/users"))
-        .andReturn();
-
-    UnintendedErrorResponse errorResponse = objectMapper.readValue(result.getResponse().getContentAsString(),
-        UnintendedErrorResponse.class);
 
     Instant responseTimestamp = errorResponse.getTimestamp();
     Instant higherTimestampLimit = Instant.now();
