@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fer.connect.config.TestContainerConfig;
 import com.fer.connect.exception.RestErrorType;
 import com.fer.connect.user.util.UserBuilder;
-import com.fer.connect.user.util.UserJsonWriter;
 
 @ActiveProfiles("integration")
 @Testcontainers
@@ -36,7 +35,7 @@ class UserControllerTest {
 
   @Test
   void returnsCreatedStatus_whenUserDataIsValid() throws Exception {
-    String validUserJson = UserJsonWriter.writeString(new UserBuilder().build());
+    String validUserJson = objectMapper.writeValueAsString(new UserBuilder().build());
 
     mockMvc
         .perform(
@@ -62,7 +61,7 @@ class UserControllerTest {
 
   @Test
   void returnsBadRequestStatus_whenNeccessaryFieldsAreEmpty() throws Exception {
-    String invalidUserJson = UserJsonWriter.writeString(new UserBuilder().withPassword("").build());
+    String invalidUserJson = objectMapper.writeValueAsString(new UserBuilder().withPassword("").build());
     mockMvc
         .perform(MockMvcRequestBuilders.post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
             .content(invalidUserJson))
@@ -71,7 +70,7 @@ class UserControllerTest {
 
   @Test
   void returnsBadRequest_whenPasswordIsTooShort() throws Exception {
-    String shortPassUserJson = UserJsonWriter.writeString(new UserBuilder().withPassword("Short").build());
+    String shortPassUserJson = objectMapper.writeValueAsString(new UserBuilder().withPassword("Short").build());
 
     mockMvc
         .perform(
@@ -82,8 +81,8 @@ class UserControllerTest {
   }
 
   @Test
-  void reurnsBadRequestWithMessage_whenEmailAlreadyInDB() throws Exception {
-    String defaultUserJson = UserJsonWriter.writeString(new UserBuilder().build());
+  void returnsBadRequestWithMessage_whenEmailAlreadyInDB() throws Exception {
+    String defaultUserJson = objectMapper.writeValueAsString(new UserBuilder().build());
 
     mockMvc
         .perform(

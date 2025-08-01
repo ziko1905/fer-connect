@@ -24,7 +24,6 @@ import com.fer.connect.config.TestContainerConfig;
 import com.fer.connect.exception.IntendedErrorResponse;
 import com.fer.connect.exception.RestErrorType;
 import com.fer.connect.user.util.UserBuilder;
-import com.fer.connect.user.util.UserJsonWriter;
 
 @ActiveProfiles("integration")
 @Testcontainers
@@ -42,7 +41,7 @@ class FerConnectApplicationTests {
 
   @Test
   void haveRightJsonErrorFormat_whenIntendedAPIErrorOccurs() throws Exception {
-    String sameEmailUserJson = UserJsonWriter.writeString(new UserBuilder().build());
+    String sameEmailUserJson = objectMapper.writeValueAsString(new UserBuilder().build());
 
     // Makes sure email is in the db so that exception api will respond with error
     mockMvc.perform(
