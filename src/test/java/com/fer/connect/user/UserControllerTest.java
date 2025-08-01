@@ -1,5 +1,6 @@
 package com.fer.connect.user;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,8 +13,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.hamcrest.Matchers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fer.connect.config.TestContainerConfig;
 import com.fer.connect.exception.RestErrorType;
 import com.fer.connect.user.util.UserBuilder;
@@ -29,6 +30,9 @@ class UserControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @Test
   void returnsCreatedStatus_whenUserDataIsValid() throws Exception {
@@ -93,5 +97,15 @@ class UserControllerTest {
         .andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers.content()
             .string(Matchers.containsString(RestErrorType.USER_EMAIL_EXISTS.getMessage())));
+  }
+
+  @Test
+  void returnsBadRequest_whenInvalidEmailFormatIsUsed() throws Exception {
+    String invalidEmailUserJson = objectMapper.writeValueAsString(new UserBuilder().withEmail("notValidEmail").build());
+
+    mockMvc
+        .perform(MockMvcRequestBuilders.post("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
+            .content(invalidEmailUserJson))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest());
   }
 }

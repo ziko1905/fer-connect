@@ -14,6 +14,12 @@ public class UserBuilder {
     return this;
   }
 
+  public UserBuilder withEmail(String email) {
+    this.email = email;
+
+    return this;
+  }
+
   public User build() {
     return new User(firstName, lastName, email, password);
   }
