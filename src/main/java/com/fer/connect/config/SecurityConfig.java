@@ -19,6 +19,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/error").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/login").permitAll()
             .anyRequest().authenticated())
         .formLogin(form -> form.disable())
         .httpBasic(basic -> basic.disable());
